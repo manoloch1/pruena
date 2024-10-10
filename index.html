@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visor de Mantenimiento</title>
+    <link rel="stylesheet" href="static/styles.css">
+    <style>
+        /* Estilos básicos para el acordeón */
+        .accordion {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .accordion.active, .accordion:hover {
+            background-color: #ccc;
+        }
+
+        .panel {
+            padding: 0 10px;
+            display: none;
+            overflow: hidden;
+            background-color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .filter-input {
+            margin-bottom: 10px;
+            width: 100%;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mantenimiento, Computadoras e Impresoras</h1>
+    <button onclick="window.location.href='http://127.0.0.1:5500/agregar-equipo.html'">Agregar Equipo</button>
+    <button class="accordion">Mantenimiento</button>
+    <div class="panel">
+        <input type="text" id="mantenimiento-filter" class="filter-input" placeholder="Filtrar Mantenimiento...">
+        <table id="mantenimiento-table"></table>
+    </div>
+
+    <button class="accordion">Equipos</button>
+    <div class="panel">
+        <input type="text" id="equipos-filter" class="filter-input" placeholder="Filtrar Equiposs...">
+        <table id="equipos-table"></table>
+    </div>
+
+    
+
+    <script>
+        async function fetchData(sheetName, tableId) {
+            const response = await fetch(`/data/${sheetName}`);
+            const data = await response.json();
+            const table = document.getElementById(tableId);
+            table.innerHTML = ''; // Limpiar la tabla antes de llenarla
+
+            // Crear encabezados de tabla
+            const headerRow = document.createElement('tr');
+            data[0].forEach(cell => {
+                const th = document.createElement('th');
+                th.textContent = cell;
+                headerRow.appendChild(th);
+            });
+            table.appendChild(headerRow);
+
+            // Crear filas de datos
+            data.slice(1).forEach(row => {
+                const tr = document.createElement('tr');
+                row.forEach(cell => {
+                    const td = document.createElement('td');
+                    td.textContent = cell;
+                    tr.appendChild(td);
+                });
+                table.appendChild(tr);
+            });
+
+            // Añadir filtrado
+            addFiltering(tableId, data);
+        }
+
+        function addFiltering(tableId, data) {
+            const filterInputId = tableId.replace('table', 'filter');
+            const filterInput = document.getElementById(filterInputId);
+            filterInput.addEventListener('input', () => {
+                const filterValue = filterInput.value.toLowerCase();
+                const rows = document.getElementById(tableId).getElementsByTagName('tr');
+                
+                // Filtrar filas
+                for (let i = 1; i < rows.length; i++) { // Comenzar desde 1 para omitir el encabezado
+                    const row = rows[i];
+                    let shouldDisplay = false;
+
+                    for (let j = 0; j < row.cells.length; j++) {
+                        const cell = row.cells[j];
+                        if (cell.textContent.toLowerCase().includes(filterValue)) {
+                            shouldDisplay = true;
+                            break;
+                        }
+                    }
+                    row.style.display = shouldDisplay ? '' : 'none';
+                }
+            });
+        }
+
+        // Cargar datos al cargar la página
+        window.onload = () => {
+            fetchData('Mantenimiento', 'mantenimiento-table');
+            fetchData('Equipos', 'equipos-table');
+            
+
+            const accordions = document.getElementsByClassName("accordion");
+            for (let i = 0; i < accordions.length; i++) {
+                accordions[i].addEventListener("click", function() {
+                    this.classList.toggle("active");
+                    const panel = this.nextElementSibling;
+                    if (panel.style.display === "block") {
+                        panel.style.display = "none";
+                    } else {
+                        panel.style.display = "block";
+                    }
+                });
+            }
+        };
+    </script>
+    
+</body>
+</html>
