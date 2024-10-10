@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Mantenimiento</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div id="mantenimiento-container">
+        <h2>Registrar Mantenimiento</h2>
+        <form id="mantenimiento-form">
+            <label for="ubicacion">Ubicación:</label>
+            <input type="text" id="ubicacion" required>
+            <label for="equipo-id">ID de Equipo:</label>
+            <input type="number" id="equipo-id" required>
+            <label for="tipo">Tipo:</label>
+            <select id="tipo" required>
+                <option value="Computadora">Computadora</option>
+                <option value="Impresora">Impresora</option>
+            </select>
+            <label for="modelo">Modelo:</label>
+            <input type="text" id="modelo" required>
+            <label for="estado">Estado:</label>
+            <input type="text" id="estado" required>
+            <label for="notas">Notas:</label>
+            <textarea id="notas"></textarea>
+            <button type="submit">Registrar</button>
+        </form>
+        
+        <div id="success-message" style="color: green;"></div>
+        <div id="error-message" style="color: red;"></div>
+    </div>
+    <script src="mantenimiento.js"></script>
+</body>
+</html>
